@@ -1,4 +1,4 @@
-#A fun way to learn vim navigation.
+# A fun way to learn vim navigation.
 
 ## **Character Movements**
 - `h`: Move left by one character.
