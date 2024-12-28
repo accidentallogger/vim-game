@@ -4,10 +4,16 @@
 #include <unistd.h>
 #include <termios.h>
 #include <fcntl.h>
+#include <vector>
+#include "maze.h"
 
-// Define the grid size
-const int WIDTH = 10;
-const int HEIGHT = 10;
+
+#define WALL '#'
+#define PATH '.'
+#define ENDPOINT '*'
+#define SPRITE '@'
+
+
 
 // Function to clear the screen (platform-specific)
 void clearScreen() {
@@ -21,7 +27,7 @@ void clearScreen() {
 }
 
 // Function to display the grid
-void displayGrid(int playerX, int playerY, int targetX, int targetY) {
+/*void displayGrid(int playerX, int playerY, int targetX, int targetY) {
     for (int y = 0; y < HEIGHT; y++) {
         for (int x = 0; x < WIDTH; x++) {
             if (x == playerX && y == playerY)
@@ -33,7 +39,7 @@ void displayGrid(int playerX, int playerY, int targetX, int targetY) {
         }
         std::cout << std::endl;
     }
-}
+}*/
 
 // Function to get a non-blocking keypress
 char getKeyPress() {
@@ -52,24 +58,26 @@ char getKeyPress() {
 }
 
 int main() {
-    // Initialize random seed
-    std::srand(std::time(nullptr));
+int playerX=1;
+int playerY=1;
+int n=21;
+int thicc=2;
+int targetX=n-thicc;
+int targetY=n-thicc;
 
-    // Player starting position
-    int playerX = WIDTH / 2;
-    int playerY = HEIGHT / 2;
 
-    // Random target position
-    int targetX = std::rand() % WIDTH;
-    int targetY = std::rand() % HEIGHT;
-
+srand(time(0));
+std::vector<std::vector<char>> maz = create_maze(n,playerX,playerY,targetX,targetY,thicc);
     bool gameWon = false;
     char move;
 
     while (!gameWon) {
         // Clear the screen and display the grid
         clearScreen();
-        displayGrid(playerX, playerY, targetX, targetY);
+
+   
+show_maze(maz);
+
 
         // Get the key press without blocking
         move = getKeyPress();
@@ -77,16 +85,18 @@ int main() {
         // Process the move
         switch (move) {
             case 'h':
-                if (playerX > 0) playerX--;  // Move left
-                break;
+                if (playerX > 0 && maz[playerX-1][playerY]=='.'){ maz[playerX][playerY]=PATH;playerX--; maz[playerX][playerY]=SPRITE;}  // Move left
+	//	std::cout<<"h"<<std::endl;
+	//	std::cout<<playerX<<" "<<playerY<<std::endl;
+		break;
             case 'j':
-                if (playerY < HEIGHT - 1) playerY++;  // Move down
+                if (playerY < n - 1 &&  maz[playerX][playerY+1]=='.'){ maz[playerX][playerY]=PATH;playerY++; maz[playerX][playerY]=SPRITE; } // Move down
                 break;
             case 'k':
-                if (playerY > 0) playerY--;  // Move up
+                if (playerY > 0&&  maz[playerX][playerY-1]=='.' ){ maz[playerX][playerY]=PATH;playerY--;maz[playerX][playerY]=SPRITE;}  // Move up
                 break;
             case 'l':
-                if (playerX < WIDTH - 1) playerX++;  // Move right
+                if (playerX < n - 1 &&  maz[playerX+1][playerY]=='.'){ maz[playerX][playerY]=PATH;playerX++;  maz[playerX][playerY]=SPRITE;} // Move right
                 break;
             default:
                 break; // Do nothing for invalid keys
@@ -97,14 +107,15 @@ int main() {
             gameWon = true;
         }
 
-        usleep(100000); // Sleep for a short time to make the game real-time
+        usleep(100000); //Sleep for a short time to make the game real-time
     }
 
     // Game won message
-    clearScreen();
-    displayGrid(playerX, playerY, targetX, targetY);
-    std::cout << "Congratulations! You've reached the target!" << std::endl;
+   clearScreen();
+   // displayGrid(playerX, playerY, targetX, targetY);
+  //  std::cout << "Congratulations! You've reached the target!" << std::endl;
 
-    return 0;
+
+	return 0;
 }
 
