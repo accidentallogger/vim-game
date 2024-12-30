@@ -6,12 +6,17 @@
 #include <fcntl.h>
 #include <vector>
 #include "maze.h"
+#include "config.h"
 
-
+/*
 #define WALL '#'
 #define PATH '.'
 #define ENDPOINT '*'
 #define SPRITE '@'
+
+#define textcolorwall "\033[32m"
+#define defaultcolor "\033[0m"
+*/
 
 
 
@@ -60,7 +65,7 @@ char getKeyPress() {
 int main() {
 int playerX=1;
 int playerY=1;
-int n=21;
+int n=9;
 int thicc=2;
 int targetX=n-thicc;
 int targetY=n-thicc;
@@ -70,7 +75,7 @@ srand(time(0));
 std::vector<std::vector<char>> maz = create_maze(n,playerX,playerY,targetX,targetY,thicc);
     bool gameWon = false;
     char move;
-
+maz[targetX][targetY]=ENDPOINT;
     while (!gameWon) {
         // Clear the screen and display the grid
         clearScreen();
@@ -84,19 +89,31 @@ show_maze(maz);
 
         // Process the move
         switch (move) {
-            case 'h':
-                if (playerX > 0 && maz[playerX-1][playerY]=='.'){ maz[playerX][playerY]=PATH;playerX--; maz[playerX][playerY]=SPRITE;}  // Move left
+		case 'h':
+                if (playerX > 0 && (maz[playerY][playerX-1]==PATH  ||  maz[playerY][playerX-1]==ENDPOINT)){ 
+			maz[playerY][playerX]=PATH;
+			playerX--; 
+			maz[playerY][playerX]=SPRITE;}  // Move left
 	//	std::cout<<"h"<<std::endl;
 	//	std::cout<<playerX<<" "<<playerY<<std::endl;
 		break;
             case 'j':
-                if (playerY < n - 1 &&  maz[playerX][playerY+1]=='.'){ maz[playerX][playerY]=PATH;playerY++; maz[playerX][playerY]=SPRITE; } // Move down
+                if (playerY < n &&  (maz[playerY+1][playerX]==PATH  ||  maz[playerY+1][playerX]==ENDPOINT)){ 
+			maz[playerY][playerX]=PATH;
+			playerY++; 
+			maz[playerY][playerX]=SPRITE; } // Move down
                 break;
             case 'k':
-                if (playerY > 0&&  maz[playerX][playerY-1]=='.' ){ maz[playerX][playerY]=PATH;playerY--;maz[playerX][playerY]=SPRITE;}  // Move up
+                if (playerY > 0&& ( maz[playerY-1][playerX]==PATH  ||  maz[playerY-1][playerX]==ENDPOINT) ){ 
+			maz[playerY][playerX]=PATH;
+			playerY--;
+			maz[playerY][playerX]=SPRITE;}  // Move up
                 break;
             case 'l':
-                if (playerX < n - 1 &&  maz[playerX+1][playerY]=='.'){ maz[playerX][playerY]=PATH;playerX++;  maz[playerX][playerY]=SPRITE;} // Move right
+                if (playerX < n &&  (maz[playerY][playerX+1]==PATH ||  maz[playerY][playerX+1]==ENDPOINT)){ 
+			maz[playerY][playerX]=PATH;
+			playerX++; 
+			maz[playerY][playerX]=SPRITE;} // Move right
                 break;
             default:
                 break; // Do nothing for invalid keys
